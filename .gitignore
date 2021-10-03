@@ -338,3 +338,12 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+IdentityServer/.vs/IdentityServer/v16/.suo
+IdentityServer/.vs/IdentityServer/v16/.suo
+IdentityServer/IdentityServer/obj/Debug/net5.0/IdentityServer.AssemblyInfo.cs
+IdentityServer/IdentityServer/obj/Debug/net5.0/IdentityServer.assets.cache
+IdentityServer/IdentityServer/obj/Debug/net5.0/IdentityServer.csprojAssemblyReference.cache
+IdentityServer/IdentityServer/obj/IdentityServer.csproj.nuget.dgspec.json
+IdentityServer/IdentityServer/obj/IdentityServer.csproj.nuget.g.props
+IdentityServer/IdentityServer/obj/project.assets.json
+IdentityServer/IdentityServer/obj/project.nuget.cache
