@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IdentityServer.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v0/users")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -19,10 +19,35 @@ namespace IdentityServer.Controllers
             _identityContext = identityContext;
         }
 
-        [HttpGet("{username}")]
-        public IActionResult GetUser(string userName)
+        [HttpGet]
+        public IActionResult GetAllUsers()
         {
-            var user = _identityContext.Users.FirstOrDefault(u => u.Id == userName);
+            var users = _identityContext.Users
+                .Select(u => new UsersDto
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    CreationDateUtc = u.CreationDateUtc
+
+                });
+            return Ok(users);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetUser(string id)
+        {
+            var user = _identityContext.Users
+                .Where(u => u.Id == id)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    LastName = u.LastName,
+                    FirstName = u.FirstName, 
+                    Email = u.Email,
+                    CreationDateUtc = u.CreationDateUtc
+                })
+                .FirstOrDefault();
 
             if (user == null)
             {
@@ -46,8 +71,9 @@ namespace IdentityServer.Controllers
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                UserName = user.Login,
-                Password = user.Password
+                UserName = user.UserName,
+                Password = user.Password,
+                CreationDateUtc = DateTime.UtcNow
             };
 
             _identityContext.Users.Add(newUser);
@@ -63,7 +89,7 @@ namespace IdentityServer.Controllers
                 return BadRequest();
             }
 
-            var existingUser = _identityContext.Users.FirstOrDefault(u => u.UserName == user.Login);
+            var existingUser = _identityContext.Users.FirstOrDefault(u => u.Id == user.Id);
 
             if (existingUser == null)
             {
@@ -73,7 +99,7 @@ namespace IdentityServer.Controllers
             existingUser.Email = user.Email ?? existingUser.Email;
             existingUser.Password = user.Password ?? existingUser.Password;
             existingUser.FirstName = user.FirstName ?? existingUser.FirstName;
-            existingUser.UserName = user.Login ?? existingUser.UserName;
+            existingUser.UserName = user.UserName ?? existingUser.UserName;
 
             _identityContext.Users.Update(existingUser);
             await _identityContext.SaveChangesAsync();
@@ -81,15 +107,15 @@ namespace IdentityServer.Controllers
             return Ok();
         }
 
-        [HttpDelete("{username}")]
-        public async Task<IActionResult> DeleteUser(string userName)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            if (string.IsNullOrWhiteSpace(userName))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return BadRequest();
             }
 
-            var user = _identityContext.Users.FirstOrDefault(u => u.UserName == userName);
+            var user = _identityContext.Users.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
             {
