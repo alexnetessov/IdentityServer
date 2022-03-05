@@ -8,9 +8,9 @@ namespace IdentityServer.Extensions
 {
     public static class EfCoreExtensions
     {
-        public static IHost MigrateDatabase<T>(this IHost webHost) where T : DbContext
+        public static IHost MigrateDatabase<T>(this IHost host) where T : DbContext
         {
-            using (var scope = webHost.Services.CreateScope())
+            using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
@@ -26,7 +26,7 @@ namespace IdentityServer.Extensions
                 }
             }
 
-            return webHost;
+            return host;
         }
     }
 }
