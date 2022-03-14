@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Button, Form, Input } from "antd";
+import React, { useState } from "react";
+import { Button, Form, Input, notification } from "antd";
 import UserCreateModel from "../models/UserCreate";
 import ApiService from "../../pages/api/api";
 
 const UserCreate = () => {
     const [form] = Form.useForm();
+
+    const [submitLoadibng, setSubmitLoadibng] = useState<boolean>(false);
+
+    const [api] = notification.useNotification();
 
     const handleFormSubmit = () => {
       
@@ -13,12 +17,17 @@ const UserCreate = () => {
             .then((values) => {
                 createUser(values);
             })
-            .catch((errorInfo) => { console.log('error'); });
+            .catch((errorInfo) => { console.log(`error: ${errorInfo}`); });
     };
 
     const createUser = (user: UserCreateModel) => {
         console.log(`Id: ${user.Id}, UserName: ${user.UserName}, Password: ${user.Password}, FirstName: ${user.FirstName}, LastName: ${user.LastName}, Email: ${user.Email}`);
-        ApiService.createUser(user).then();
+        setSubmitLoadibng(true);
+        ApiService.createUser(user).then(()=> {
+            setSubmitLoadibng(false);
+        }).catch(()=> {
+            setSubmitLoadibng(false);
+        });
     };
 
     return (
@@ -84,7 +93,7 @@ const UserCreate = () => {
                     <Input />
                 </Form.Item>
             </Form>
-            <Button onClick={handleFormSubmit} type="primary">
+            <Button onClick={handleFormSubmit} loading={submitLoadibng} type="primary">
                 Submit
             </Button>
         </>

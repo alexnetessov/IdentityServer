@@ -1,19 +1,20 @@
 import request from "../../lib/request";
 import User from "../../src/models/User";
+import Users from "../../src/models/Users";
 import config from "../../config.json";
 import UserCreate from "../../src/models/UserCreate";
 
 class ApiService {
     apiUrl: string = "https://localhost:5001/";
 
-    async getAllUser(): Promise<User[]> {
+    async getAllUsers(): Promise<Users[]> {
         console.log('api getAllUser');
         const url = `${this.apiUrl}${config.userEndpoint}`;
         return await request(url, 'GET') || [];
     };
 
     async getUserById(id: string): Promise<User | null> {
-        console.log('api getUserById');
+        console.log(`api getUserById id ${id}`);
         const url = `${this.apiUrl}${config.userEndpoint}/${id}`;
         return await request(url, 'GET')
     };

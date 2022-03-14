@@ -5,32 +5,26 @@ import {Popconfirm, Button} from 'antd';
 import { useRouter } from 'next/router';
 import ApiService from '../../pages/api/api';
 import Loading from "./Loading";
-import {useDispatch, useSelector} from "react-redux";
-import {Dispatch} from "../extensions/reduxThunkExtensions";
-import { Action } from "../store/users/actionTypes";
-import * as userActions from "../store/users/actions";
-import * as userSelectors from "../store/users/reducer";
-import IState from "../view_models/IState";
+import Users from "../models/Users";
 
 
 const UserComponent = () => {
     const router = useRouter();
-    const dispatch = useDispatch<Dispatch<Action>>();
-    const {users} = useSelector((state: IState)=> ({
-        users: userSelectors.getUsers(state)
-    }));
+    const [users, setUsers] = React.useState<Users[]>([])
 
     React.useEffect(() => {
-        dispatch(userActions.fetchUsers());
+        async function fetchUsers() {
+            const response = await ApiService.getAllUsers();
+            setUsers(response);
+        };
+
+        fetchUsers();
     }, []);
 
     const onDelete = (id: string) => {
+        const filteredUsers = users.filter(x=> x.Id !== id);
         ApiService.deleteUser(id);
-    };
-
-    const onEdit = (id: string) => {
-        console.log(id);
-        router.push('/users/id/[id]', `/users/id/${id}`);
+        setUsers(filteredUsers);
     };
     
     const onCreate = () => {
@@ -38,31 +32,21 @@ const UserComponent = () => {
         router.push('/users/create');
     };
 
+    const showDetails = (id: string) => {
+        console.log(id);
+        router.push('/users/details/[id]', `/users/details/${id}`);
+    };
+
     const columns: ColumnsType<User> = [
-        {
-            key: 'Id',
-            title: 'Id',
-            dataIndex: 'Id',
-        },
         {
             key: 'UserName',
             title: 'UserName',
             dataIndex: 'UserName',
         },
         {
-            key: 'FirstName',
-            title: 'FirstName',
-            dataIndex: 'FirstName'
-        },
-        {
-            key: 'LastName',
-            title: 'LastName',
-            dataIndex: 'LastName'
-        },
-        {
-            key: 'Email',
-            title: 'Email',
-            dataIndex: 'Email'
+            key: 'CreationDateUtc',
+            title: 'CreationDateUtc',
+            dataIndex: 'CreationDateUtc'
         },
         {
             key: 'Action',
@@ -74,7 +58,7 @@ const UserComponent = () => {
                        <Popconfirm title="Sure to delete?" onConfirm={() => onDelete(record.Id)}>
                            <Button>Delete</Button>
                        </Popconfirm>
-                       <Button onClick={()=> onEdit(record.Id)}>Edit</Button>
+                       <Button onClick={()=> showDetails(record.Id)} style={{marginLeft: 5}}>Detail</Button>
                    </>
                ); 
             }
@@ -89,7 +73,7 @@ const UserComponent = () => {
     return (
         <>
             <Button onClick={onCreate}>Create User</Button>
-            <Table dataSource={users} columns={columns} />
+            <Table loading={!users} dataSource={users} columns={columns} />
         </>
       );
 };

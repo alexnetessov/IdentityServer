@@ -384,3 +384,7 @@ yarn-error.log*
 
 IdentityServerFront/admin/.next/cache/webpack
 IdentityServerFront/admin/.next/cache
+IdentityServerFront/admin/.next/static/webpack
+IdentityServerFront/admin/.next
+IdentityServerFront/admin/.next
+IdentityServerFront/admin/yarn.lock

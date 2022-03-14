@@ -3,34 +3,34 @@ import { Button, Form, Input } from "antd";
 import { useRouter } from "next/router";
 import ApiService from '../../pages/api/api';
 import User from "../models/User";
-import {useDispatch, useSelector} from "react-redux";
-import * as userSelectors from "../store/users/reducer";
-import * as userActions from "../store/users/actions";
-import IState from "../view_models/IState";
-import {Dispatch} from "../extensions/reduxThunkExtensions";
-import { Action } from "../store/users/actionTypes";
 
 const UserEdit = () => {
     const [form] = Form.useForm();
     const router = useRouter();
     const id = router.query.id;
 
-    const dispatch = useDispatch<Dispatch<Action>>();
-    const {users} = useSelector((state: IState)=> ({
-        users: userSelectors.getUserById(id as string, state)
-    }));
+    const [user, setUser] = useState<User>(null);
+
 
     useEffect(() => {
-        dispatch(userActions.fetchUser(id as string)).then();
+        if (user == null) {
+            fetchUser(id as string);
+        }
+
         form.setFieldsValue({
-            Id: users?.Id,
-            UserName: users?.UserName,
-            FirstName: users?.FirstName,
-            LastName: users?.LastName,
-            Email: users?.Email,
+            Id: user?.Id,
+            UserName: user?.UserName,
+            FirstName: user?.FirstName,
+            LastName: user?.LastName,
+            Email: user?.Email,
         })
 
-    }, [form]);
+    }, [form, user]);
+
+    const fetchUser = async (id: string) => {
+        const response = await ApiService.getUserById(id);
+        setUser(response);
+    }
 
     const handleFormSubmit = () => {
       
