@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace IdentityServer.Extensions
+namespace IdentityServer.Data.Extensions
 {
     public static class EfCoreExtensions
     {
@@ -21,7 +21,7 @@ namespace IdentityServer.Extensions
                 }
                 catch (Exception e)
                 {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    var logger = services.GetRequiredService<ILogger<IHost>>();
                     logger.LogError(e, "An error occured while migrating the database.");
                 }
             }

@@ -37,7 +37,7 @@ namespace IdentityServer.Controllers
         public IActionResult GetUser(string id)
         {
             var user = _identityContext.Users
-                .Where(u => u.Id == id)
+                .Where(u => u.Id == Guid.Parse(id))
                 .Select(u => new UserDto
                 {
                     Id = u.Id,
@@ -67,7 +67,7 @@ namespace IdentityServer.Controllers
 
             var newUser = new User
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -115,7 +115,7 @@ namespace IdentityServer.Controllers
                 return BadRequest();
             }
 
-            var user = _identityContext.Users.FirstOrDefault(u => u.Id == id);
+            var user = _identityContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(id));
 
             if (user == null)
             {

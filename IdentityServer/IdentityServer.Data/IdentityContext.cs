@@ -8,7 +8,7 @@ namespace IdentityServer.Data
         public DbSet<User> Users { get; set; }
 
         public IdentityContext(DbContextOptions<IdentityContext> options)
-        : base(options) { }
+            : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

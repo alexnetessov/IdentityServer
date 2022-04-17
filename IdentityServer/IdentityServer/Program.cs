@@ -1,5 +1,5 @@
 using IdentityServer.Data;
-using IdentityServer.Extensions;
+using IdentityServer.Data.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 

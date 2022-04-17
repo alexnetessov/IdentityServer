@@ -1,7 +1,6 @@
 using IdentityServer.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -27,8 +26,7 @@ namespace IdentityServer
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = nameof(IdentityServer), Version = "v1" });
             });
 
-            services.AddDbContext<IdentityContext>(options =>
-                options.UseNpgsql(_config.DbConnectionString));
+            DbContextInitializer.Initialize(services, _config.DbConnectionString);
             services.AddCors();
         }
 

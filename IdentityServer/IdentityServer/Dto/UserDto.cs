@@ -6,7 +6,7 @@ namespace IdentityServer.Dto
     public class UserDto
     {
         [JsonPropertyName("Id")]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [JsonPropertyName("UserName")]
         public string UserName { get; set; }
