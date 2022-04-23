@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Controllers
 {
@@ -27,7 +28,7 @@ namespace IdentityServer.Controllers
                 {
                     Id = u.Id,
                     UserName = u.UserName,
-                    CreationDateUtc = u.CreationDateUtc
+                    CreationDateUtc = u.CreationDate
 
                 });
             return Ok(users);
@@ -45,7 +46,7 @@ namespace IdentityServer.Controllers
                     LastName = u.LastName,
                     FirstName = u.FirstName, 
                     Email = u.Email,
-                    CreationDateUtc = u.CreationDateUtc
+                    CreationDateUtc = u.CreationDate
                 })
                 .FirstOrDefault();
 
@@ -72,8 +73,7 @@ namespace IdentityServer.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 UserName = user.UserName,
-                Password = user.Password,
-                CreationDateUtc = DateTime.UtcNow
+                Password = user.Password
             };
 
             _identityContext.Users.Add(newUser);
@@ -89,7 +89,7 @@ namespace IdentityServer.Controllers
                 return BadRequest();
             }
 
-            var existingUser = _identityContext.Users.FirstOrDefault(u => u.Id == user.Id);
+            var existingUser = await _identityContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
 
             if (existingUser == null)
             {

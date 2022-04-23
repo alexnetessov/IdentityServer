@@ -2,7 +2,7 @@
 
 namespace IdentityServer.Data.Model
 {
-    public class User
+    public class User : AuditableEntity
     {
         public Guid Id { get; set; }
 
@@ -15,7 +15,5 @@ namespace IdentityServer.Data.Model
         public string FirstName { get; set; }
 
         public string Email { get; set; }
-
-        public DateTime CreationDateUtc { get; set; }
     }
 }
