@@ -1,3 +1,4 @@
 {
-    "userEndpoint": "api/v0/users"
+    "userEndpoint": "api/v0/users",
+    "groupsEndpoint": "api/v0/groups"
 }

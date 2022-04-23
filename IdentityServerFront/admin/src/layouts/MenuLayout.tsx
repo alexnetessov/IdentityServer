@@ -1,9 +1,9 @@
 import { Menu } from 'antd';
 import { useRouter } from 'next/router';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, GroupOutlined } from '@ant-design/icons';
 import Link from 'next/link'
 
-const keys = ['/users'];
+const keys = ['/users', '/groups'];
 
 const menuItems = [
     <Menu.Item key={keys[0]}>
@@ -13,7 +13,16 @@ const menuItems = [
                 <span>Users</span>
             </a>
         </Link>
+    </Menu.Item>,
+    <Menu.Item key={keys[1]}>
+    <Link href={keys[1]}>
+        <a>
+            <GroupOutlined />
+            <span>Groups</span>
+        </a>
+    </Link>
     </Menu.Item>
+    
 ];
 
 const MenuLayout = () => {
