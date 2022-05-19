@@ -5,5 +5,5 @@ export default interface User {
     FirstName: string;
     LastName: string;
     Email: string;
-    CreationDateUtc: string;
+    CreationDate: string;
 }

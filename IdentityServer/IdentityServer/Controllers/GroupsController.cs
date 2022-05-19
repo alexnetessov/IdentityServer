@@ -1,10 +1,10 @@
-﻿using IdentityServer.Data;
+﻿using AutoMapper;
 using IdentityServer.Data.Model;
 using IdentityServer.Dto;
+using IdentityServer.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IdentityServer.Controllers
@@ -13,106 +13,47 @@ namespace IdentityServer.Controllers
     [ApiController]
     public class GroupsController : ControllerBase
     {
-        private readonly IdentityContext _identityContext;
+        private readonly IGroupService _groupService;
+        private readonly IMapper _mapper;
 
-        public GroupsController(IdentityContext identityContext)
+        public GroupsController(IGroupService groupService, IMapper mapper)
         {
-            _identityContext = identityContext;
+            _groupService = groupService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult GetGroups()
         {
-            var groups = _identityContext.Groups
-                .Select(g => new GroupDto
-                {
-                    Id = g.Id,
-                    Name = g.Name,
-                    CreationDate = g.CreationDate
-                });
-
-            return Ok(groups);
+            var groups = _groupService.GetAllGroups();
+            return Ok(_mapper.Map<IEnumerable<GroupDto>>(groups));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGroupById(Guid id)
         {
-            var group = await _identityContext.Groups.Where(g => g.Id == id)
-                .Select(g => new GroupDto
-                {
-                    Id = g.Id,
-                    Name = g.Name,
-                    CreationDate = g.CreationDate
-                }).FirstOrDefaultAsync();
-
-            if (group == null)
-            {
-                return BadRequest();
-            }
-
-            return Ok(group);
+            var group = await _groupService.GetGroupById(id);
+            return Ok(_mapper.Map<GroupDto>(group));
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateGroup([FromBody] GroupDto group)
         {
-            if (group == null)
-            {
-                return BadRequest();
-            }
-
-            var newGroup = new Group
-            {
-                Id = new Guid(),
-                Name = group.Name
-            };
-
-            _identityContext.Groups.Add(newGroup);
-            await _identityContext.SaveChangesAsync();
-            return Ok(newGroup.Id);
+            var id = await _groupService.AddGroup(_mapper.Map<Group>(group));
+            return Ok(id);
         }
 
         [HttpPut]
         public async Task<IActionResult> ChangeGroup([FromBody] GroupDto group)
         {
-            if (group == null)
-            {
-                return BadRequest();
-            }
-
-            var existingGroup = await _identityContext.Groups.FirstOrDefaultAsync(g => g.Id == group.Id);
-
-            if (existingGroup == null)
-            {
-                return NotFound();
-            }
-
-            existingGroup.Name = group.Name;
-
-            _identityContext.Groups.Update(existingGroup);
-            await _identityContext.SaveChangesAsync();
-
+            await _groupService.UpdateGroup(_mapper.Map<Group>(group));
             return Ok();
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteGroup(Guid id)
         {
-            if (id == Guid.Empty)
-            {
-                return BadRequest();
-            }
-
-            var group = await _identityContext.Groups.FirstOrDefaultAsync(g => g.Id == id);
-
-            if (group == null)
-            {
-                return NotFound();
-            }
-
-            _identityContext.Groups.Remove(group);
-            await _identityContext.SaveChangesAsync();
-
+            await _groupService.DeleteGroup(id);
             return Ok();
         }
     }

@@ -70,7 +70,7 @@ const UserProfile = () => {
                     <Typography>Creation date (UTC)</Typography>
                 </Card.Grid>
                 <Card.Grid hoverable={false} style={gridStyle}>
-                    <Typography>{user?.CreationDateUtc}</Typography>
+                    <Typography>{user?.CreationDate}</Typography>
                 </Card.Grid>
             </Card>
         </div>

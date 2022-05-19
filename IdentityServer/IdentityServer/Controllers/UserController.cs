@@ -1,11 +1,11 @@
-﻿using IdentityServer.Data;
+﻿using AutoMapper;
 using IdentityServer.Data.Model;
 using IdentityServer.Dto;
+using IdentityServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Controllers
 {
@@ -13,117 +13,47 @@ namespace IdentityServer.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IdentityContext _identityContext;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IdentityContext identityContext)
+        public UserController(IUserService userService, IMapper mapper)
         {
-            _identityContext = identityContext;
+            _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult GetAllUsers()
         {
-            var users = _identityContext.Users
-                .Select(u => new UsersDto
-                {
-                    Id = u.Id,
-                    UserName = u.UserName,
-                    CreationDateUtc = u.CreationDate
-
-                });
-            return Ok(users);
+            var users = _userService.GetAllUsers();
+            return Ok(_mapper.Map<IEnumerable<UserDto>>(users));
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetUser(string id)
+        public async Task<IActionResult> GetUser(Guid id)
         {
-            var user = _identityContext.Users
-                .Where(u => u.Id == Guid.Parse(id))
-                .Select(u => new UserDto
-                {
-                    Id = u.Id,
-                    UserName = u.UserName,
-                    LastName = u.LastName,
-                    FirstName = u.FirstName, 
-                    Email = u.Email,
-                    CreationDateUtc = u.CreationDate
-                })
-                .FirstOrDefault();
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(user);
+            var user = await _userService.GetUserById(id);
+            return Ok(_mapper.Map<UserDto>(user));
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserDto user)
         {
-            if (user == null)
-            {
-                return BadRequest();
-            }
-
-            var newUser = new User
-            {
-                Id = Guid.NewGuid(),
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                UserName = user.UserName,
-                Password = user.Password
-            };
-
-            _identityContext.Users.Add(newUser);
-            await _identityContext.SaveChangesAsync();
-            return Ok();
+            var id = await _userService.AddUser(_mapper.Map<User>(user));
+            return Ok(id);
         }
 
         [HttpPut]
         public async Task<IActionResult> ChangeUser([FromBody] UserDto user)
         {
-            if (user == null)
-            {
-                return BadRequest();
-            }
-
-            var existingUser = await _identityContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-
-            if (existingUser == null)
-            {
-                return NotFound();
-            }
-
-            existingUser.Email = user.Email ?? existingUser.Email;
-            existingUser.Password = user.Password ?? existingUser.Password;
-            existingUser.FirstName = user.FirstName ?? existingUser.FirstName;
-            existingUser.UserName = user.UserName ?? existingUser.UserName;
-
-            _identityContext.Users.Update(existingUser);
-            await _identityContext.SaveChangesAsync();
-
+            await _userService.UpdateUser(_mapper.Map<User>(user));
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BadRequest();
-            }
-
-            var user = _identityContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(id));
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _identityContext.Users.Remove(user);
-            await _identityContext.SaveChangesAsync();
+            await _userService.DeleteUser(id);
             return Ok();
         }
     }

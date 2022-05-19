@@ -23,7 +23,7 @@ namespace IdentityServer.Dto
         [JsonPropertyName("Email")]
         public string Email { get; set; }
 
-        [JsonPropertyName("CreationDateUtc")]
-        public DateTime CreationDateUtc { get; set; }
+        [JsonPropertyName("CreationDate")]
+        public DateTime CreationDate { get; set; }
     }
 }

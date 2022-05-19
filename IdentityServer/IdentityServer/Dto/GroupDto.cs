@@ -5,13 +5,13 @@ namespace IdentityServer.Dto
 {
     public class GroupDto
     {
-        [JsonPropertyName(nameof(Id))]
+        [JsonPropertyName("Id")]
         public Guid Id { get; set; }
 
-        [JsonPropertyName(nameof(Name))]
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
 
-        [JsonPropertyName(nameof(CreationDate))]
+        [JsonPropertyName("CreationDate")]
         public DateTime CreationDate { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace IdentityServer.Dto
         [JsonPropertyName("UserName")]
         public string UserName { get; set; }
 
-        [JsonPropertyName("CreationDateUtc")]
-        public DateTime CreationDateUtc { get; set; }
+        [JsonPropertyName("CreationDate")]
+        public DateTime CreationDate { get; set; }
     }
 }
