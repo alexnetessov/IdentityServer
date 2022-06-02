@@ -1,9 +1,11 @@
 using System;
+using System.Text.RegularExpressions;
 using IdentityServer.Data;
 using IdentityServer.Middleware;
 using IdentityServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
@@ -13,6 +15,7 @@ namespace IdentityServer
     public class Startup
     {
         private readonly IdentityServerConfig _config;
+        private readonly Regex _corsOrigin = new("localhost", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public Startup()
         {
@@ -47,11 +50,17 @@ namespace IdentityServer
                 });
             }
 
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+            });
+
             app.UseMiddleware<ErrorHandlerMiddleware>();
 
             app.UseRouting();
 
-            app.UseCors(builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder =>
+                builder.SetIsOriginAllowed(x => _corsOrigin.IsMatch(x)).AllowAnyHeader().AllowAnyMethod());
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

@@ -23,7 +23,7 @@ namespace IdentityServer.Data
             modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
             foreach (var entity in ChangeTracker.Entries<AuditableEntity>())
             {

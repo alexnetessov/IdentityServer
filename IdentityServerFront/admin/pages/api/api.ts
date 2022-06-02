@@ -6,7 +6,7 @@ import UserCreate from "../../src/models/UserCreate";
 import Group from "../../src/models/Group";
 
 class ApiService {
-    apiUrl: string = "https://localhost:5001/";
+    apiUrl: string = process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL;
 
     async getAllUsers(): Promise<Users[]> {
         console.log('api getAllUser');

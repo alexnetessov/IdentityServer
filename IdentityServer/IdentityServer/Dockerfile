@@ -1,17 +1,24 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 5000
+EXPOSE 5001
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["IdentityServer.csproj", "./"]
-RUN dotnet restore "IdentityServer.csproj"
+COPY ["IdentityServer/IdentityServer.csproj", "IdentityServer/"]
+COPY ["IdentityServer.Data/IdentityServer.Data.csproj", "IdentityServer.Data/"]
+COPY ["IdentityServer.Services/IdentityServer.Services.csproj", "IdentityServer.Services/"]
+RUN dotnet restore "IdentityServer/IdentityServer.csproj"
 COPY . .
+WORKDIR "/src/IdentityServer"
+RUN dotnet build "IdentityServer.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet dev-certs https
 RUN dotnet publish "IdentityServer.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=publish /app/publish .
+COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/* /root/.dotnet/corefx/cryptography/x509stores/my/
 ENTRYPOINT ["dotnet", "IdentityServer.dll"]

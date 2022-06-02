@@ -22,7 +22,7 @@ namespace IdentityServer.Data.Extensions
                 catch (Exception e)
                 {
                     var logger = services.GetRequiredService<ILogger<IHost>>();
-                    logger.LogError(e, "An error occured while migrating the database.");
+                    logger.LogError(e, "An error occurred while migrating the database.");
                 }
             }
 

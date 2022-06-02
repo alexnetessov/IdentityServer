@@ -1,0 +1,50 @@
+version: '3.4'
+
+services:
+  nginx:
+    depends_on:
+      - back
+      - front
+    restart: always
+    build:
+      dockerfile: ./Dockerfile
+      context: ./nginx
+    ports:
+      - "3050:80"
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      
+  back:
+    build:
+      dockerfile: ./IdentityServer/Dockerfile
+      context: ./IdentityServer
+    depends_on:
+      - postgres
+    environment:
+      USERS_DB_CONNECTION_STRING: "Host=postgres;Port=5432;Database=Identity;Username=postgres;Password=postgres"
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_HTTPS_PORT: "5001"
+      ASPNETCORE_ENVIRONMENT: Development
+    volumes:
+      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
+      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/ 
+
+  front:
+    stdin_open: true
+    build:
+      dockerfile: ./Dockerfile
+      context: ./IdentityServerFront/admin
+    environment:
+      NEXT_PUBLIC_REACT_APP_BACKEND_URL: "http://localhost:5000/api/"
+      
+volumes:
+  pgdata:
