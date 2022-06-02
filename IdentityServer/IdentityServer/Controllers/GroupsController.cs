@@ -29,7 +29,7 @@ namespace IdentityServer.Controllers
             return Ok(_mapper.Map<IEnumerable<GroupDto>>(groups));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetGroupById(Guid id)
         {
             var group = await _groupService.GetGroupById(id);

@@ -5,7 +5,7 @@ services:
     depends_on:
       - back
       - front
-    restart: always
+    restart: unless-stopped
     build:
       dockerfile: ./Dockerfile
       context: ./nginx
@@ -29,10 +29,10 @@ services:
       context: ./IdentityServer
     depends_on:
       - postgres
+    restart: unless-stopped
     environment:
       USERS_DB_CONNECTION_STRING: "Host=postgres;Port=5432;Database=Identity;Username=postgres;Password=postgres"
-      ASPNETCORE_URLS: "https://+;http://+"
-      ASPNETCORE_HTTPS_PORT: "5001"
+      ASPNETCORE_URLS: "http://+:5000"
       ASPNETCORE_ENVIRONMENT: Development
     volumes:
       - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
@@ -43,6 +43,7 @@ services:
     build:
       dockerfile: ./Dockerfile
       context: ./IdentityServerFront/admin
+    restart: unless-stopped
     environment:
       NEXT_PUBLIC_REACT_APP_BACKEND_URL: "http://localhost:5000/api/"
       

@@ -58,7 +58,7 @@ class ApiService {
     async updateGroup(group: Group){
         const url = `${this.apiUrl}${config.groupsEndpoint}`;
         const body = JSON.stringify(group);
-        await request(url, 'PUT');
+        await request(url, 'PUT', body);
     }
 
     async deleteGroup(id: string) {

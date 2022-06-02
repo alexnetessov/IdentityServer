@@ -65,7 +65,6 @@ namespace IdentityServer.Services
             existentUser.UserName = user.UserName;
             existentUser.FirstName = user.FirstName;
             existentUser.LastName = user.LastName;
-            existentUser.Password = user.Password;
             existentUser.Email = user.Email;
 
             _context.Users.Update(existentUser);
